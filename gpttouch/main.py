@@ -1,5 +1,5 @@
 # touch_qa_rag.py
-from qadevelophistory.touchqainit import TouchQAModel
+from TactileQASystem import TouchQAModel
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -7,7 +7,7 @@ if __name__ == "__main__":
     model = TouchQAModel()  # 初始化
 
     history = []  # 多轮对话历史
-    image_path = "data/test_tac_1.jpg"
+    image_path = "data/"
 
     # 第一轮
     user_question = "Please describe the tactile attributes of the objects in the image."
