@@ -3,9 +3,9 @@ import os
 import oss2
 
 # 替换为你自己的信息
-access_key_id = 'LTAI5tL5C14dFA4HBtCFtfMs'
-access_key_secret = 'dqQKrJGuC5xshEU1HlKKOTH0q6Ut81'
-bucket_name = 'js1624'
+access_key_id = ''
+access_key_secret = ''
+bucket_name = ''
 region = 'oss-eu-west-1'  # 你的bucket所在区域
 endpoint = f'https://{region}.aliyuncs.com'
 
