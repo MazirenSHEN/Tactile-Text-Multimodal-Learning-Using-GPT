@@ -38,7 +38,7 @@ import random
 from typing import List, Dict
 
 # ----------------------------
-# 配置 & 模板
+# Configuration & templates
 # ----------------------------
 intent_question_map = {
     "judgement": [
@@ -79,7 +79,7 @@ SYSTEM_ROLE = (
 )
 
 # ----------------------------
-# 工具函数
+# Utility functions
 # ----------------------------
 def get_user_query(intent: str) -> str:
     intent = intent.strip().lower()
@@ -105,7 +105,7 @@ def build_material_mapping(_: Dict[str, List[str]]) -> Dict[str, List[str]]:
     }
 
 def split_labels(captions: str) -> List[str]:
-    """清洗 + 去重 + 规范化标签"""
+    """Clean, deduplicate, and normalize labels."""
     if not captions:
         return []
     raw = []
@@ -115,7 +115,7 @@ def split_labels(captions: str) -> List[str]:
             continue
         parts = [p.strip() for p in re.split(r"[;，、]+", line) if p.strip()]
         raw.extend(parts or [line])
-    # 规范化 + 去重，保持顺序
+    # Normalize + deduplicate while preserving order
     seen, cleaned = set(), []
     for it in raw:
         it = re.sub(r"\s+", " ", it).strip()
@@ -126,7 +126,7 @@ def split_labels(captions: str) -> List[str]:
     return cleaned
 
 def extract_comparison_object(query: str) -> str:
-    """更鲁棒地从问题中抽取参照物（英文/中文，多种句式）"""
+    """Robustly extract a comparison object from the question (supports multiple phrasings)."""
     qs = query.strip().lower()
     patterns = [
         r"between\s+(?:this|the object)\s+and\s+([a-z][a-z\s-]+)[\?\.,;!]*",
@@ -139,7 +139,7 @@ def extract_comparison_object(query: str) -> str:
     for pat in patterns:
         m = re.search(pat, qs, re.IGNORECASE)
         if m:
-            return m.group(1).strip(" .,!;?-").rstrip("s")  # 去标点/复数尾
+            return m.group(1).strip(" .,!;?-").rstrip("s")
     return ""
 
 def guess_material_category(labels: List[str], material_map: Dict[str, List[str]], synonyms: Dict[str, List[str]]) -> str:
@@ -196,23 +196,23 @@ def generate_answer(intent: str, labels: List[str], user_query: str,
 def valid_url(u: str) -> bool:
     return bool(u) and isinstance(u, str) and u.strip().lower().startswith(("http://", "https://"))
 
-# ---------- 纯文本样本生成（正向+反向，每 5 张图插入一对） ----------
+# ---------- Text-only sample generation (forward + backward; insert one pair every N images) ----------
 def realize_material_name(mat_key: str) -> str:
-    """rubber-like -> rubber, stone-like -> stone"""
+    """Convert 'rubber-like' -> 'rubber', 'stone-like' -> 'stone'."""
     return mat_key.replace("-like", "")
 
 def make_tactile_phrase(words: List[str]) -> str:
-    """把若干词做成简短自然短语，控制长度"""
+    """Create a short natural phrase from words and control length."""
     chosen = random.sample(words, min(len(words), random.randint(3, 6)))
     return ", ".join(chosen)
 
 def make_text_only_pair(material_map: Dict[str, List[str]]) -> List[Dict]:
-    """返回 2 条 text-only：正向(问材料->答特征) + 反向(给特征->答材料)"""
+    """Return 2 text-only examples: forward (ask material -> answer features) and reverse (features -> answer material)."""
     mat_key = random.choice(list(material_map.keys()))
     words = material_map[mat_key]
     mat_name = realize_material_name(mat_key)
 
-    # 正向
+    # Forward
     q1 = random.choice(TEXT_ONLY_QUESTIONS).format(material=mat_name)
     phrase1 = make_tactile_phrase(words)
     a1 = f"It feels {phrase1}, providing a tactile impression typical of {mat_name}."
@@ -224,7 +224,7 @@ def make_text_only_pair(material_map: Dict[str, List[str]]) -> List[Dict]:
         ]
     }
 
-    # 反向
+    # Reverse
     phrase2 = make_tactile_phrase(words)
     q2 = f"It feels {phrase2}. What is the likely material?"
     a2 = f"These tactile cues suggest a {mat_key} material."
@@ -238,7 +238,7 @@ def make_text_only_pair(material_map: Dict[str, List[str]]) -> List[Dict]:
     return [rec1, rec2]
 
 # ----------------------------
-# 主流程
+# Main flow
 # ----------------------------
 def main():
     ap = argparse.ArgumentParser()
@@ -264,11 +264,11 @@ def main():
 
     random.seed(args.seed)
 
-    # 载入同义词与材料映射
+    # Load synonyms and material mapping
     synonyms = load_synonyms(args.synonyms)
     material_map = build_material_mapping(synonyms)
 
-    # 读取 image URL 映射
+    # Load image URL mapping
     url_map = {}
     with open(args.image_url_csv, "r", encoding="utf-8-sig", newline="") as f:
         reader = csv.DictReader(f)
@@ -280,22 +280,22 @@ def main():
             rgb_url = (row.get("rgb_url") or "").strip()
             url_map[idx] = {"tac_url": tac_url, "rgb_url": rgb_url}
 
-    # 读取 caption
+    # Load captions
     rows = []
     with open(args.csv, "r", encoding="utf-8-sig", newline="") as f:
         reader = csv.DictReader(f)
         for r in reader:
             rows.append(r)
 
-    # 生成 JSONL
+    # Generate JSONL
     sample_count = 0
     image_used = 0
     with open(args.out, "w", encoding="utf-8") as fw:
-        # ↓↓↓ 添加图像使用起始偏移量（从第 900 张图开始）
+        # ↓↓↓ Add image usage start offset (start from image #900)
         start_image_offset = 900
         rows = rows[start_image_offset:]
 
-        # ↓↓↓ 限制样本数量：1000 tactile-only + 100 双图 + 100 纯文本
+        # ↓↓↓ Sample quotas: 400 tactile-only + 35 dual-image + 100 text-only
         max_tactile_only = 400
         max_dual_image = 35
         max_text_only = 100
@@ -324,17 +324,17 @@ def main():
                 rgb_url = url_map[idx]["rgb_url"]
 
                 if not valid_url(tac_url):
-                    continue  # 没有触觉图就跳过
+                    continue  # Skip if there is no tactile image
 
-                # 优先处理 tactile-only
+                # Prefer tactile-only examples
                 image_content = [{"type": "image_url", "image_url": {"url": tac_url, "detail": "low"}}]
 
-                # 满足双图条件
+                # Dual-image condition
                 dual_mode = valid_url(rgb_url) and used_dual_image < max_dual_image
                 if dual_mode:
                     image_content.append({"type": "image_url", "image_url": {"url": rgb_url, "detail": "low"}})
 
-                # 控制生成样本数量
+                # Control sample generation
                 for intent in args.intents:
                     if sample_count >= args.limit:
                         break
@@ -354,13 +354,13 @@ def main():
                     fw.write(json.dumps(rec, ensure_ascii=False) + "\n")
                     sample_count += 1
 
-                # 更新计数器
+                # Update counters
                 if dual_mode:
                     used_dual_image += 1
                 elif used_tactile_only < max_tactile_only:
                     used_tactile_only += 1
 
-                # 每插入 5 张图像（tactile 或双图）后，生成 2 条 text-only
+                # After every 10 image-based usages (tactile-only or dual-image), insert text-only pairs (if under quota)
                 total_images_used = used_tactile_only + used_dual_image
                 if (total_images_used % 10 == 0 and used_text_only < max_text_only):
                     pair = make_text_only_pair(material_map)
@@ -371,7 +371,7 @@ def main():
                         used_text_only += 1
                         sample_count += 1
 
-    # 成本粗估（按 1 epoch）：保守上界（按所有样本都 250 tok）
+    # Rough cost estimate (1 epoch): conservative upper bound assuming 250 tokens per sample
     est_tokens_upper = sample_count * 250
     est_cost_upper = est_tokens_upper / 1_000_000 * 25  # $25 / 1M tokens (GPT-4o training)
     print(f"Wrote {sample_count} records to {args.out}")

@@ -1,0 +1,15 @@
+{
+  "N_rows": 138,
+  "LLM_calls": 138,
+  "TotalSeconds": 367.54983799999997,
+  "MeanSecPerCall": 2.6634046231884057,
+  "QPS": 0.37545928669406736,
+  "ErrorRate": 0.0,
+  "EmptyAnswerRate": 0.0,
+  "BLEU4_mean": 0.010011572060993273,
+  "BLEU4_CI_low": 0.009485682798208968,
+  "BLEU4_CI_high": 0.010532272456051076,
+  "TokenF1_mean": 0.013964506776144725,
+  "TokenF1_CI_low": 0.01058001265102922,
+  "TokenF1_CI_high": 0.01815104068670202
+}

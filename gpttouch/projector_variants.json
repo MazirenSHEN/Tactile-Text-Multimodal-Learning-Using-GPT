@@ -1,0 +1,5 @@
+{
+  "ViTProjector": {
+    "projector_path": "tac_projector_vit5p_best.pt"
+  }
+}

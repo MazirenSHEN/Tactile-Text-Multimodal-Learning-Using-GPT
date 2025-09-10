@@ -2,29 +2,29 @@ import csv
 import os
 import oss2
 
-# 替换为你自己的信息
-access_key_id = ''
-access_key_secret = ''
-bucket_name = ''
-region = 'oss-eu-west-1'  # 你的bucket所在区域
+# Replace with your own information
+access_key_id = 'LTAI5tL5C14dFA4HBtCFtfMs'
+access_key_secret = 'dqQKrJGuC5xshEU1HlKKOTH0q6Ut81'
+bucket_name = 'js1624'
+region = 'oss-eu-west-1'  # The region where your bucket is located
 endpoint = f'https://{region}.aliyuncs.com'
 
 tac_dir = "../data/ssvtp/images_tac"
 rgb_dir = "../data/ssvtp/images_rgb"
-index_csv = "data/ssvtp/new_train.csv"  # 原始 CSV，用于匹配 index
-output_csv = "data/ssvtp/image_url_mapping.csv"  # 输出保存路径
+index_csv = "data/ssvtp/new_train.csv"  # Original CSV used to match index
+output_csv = "data/ssvtp/image_url_mapping.csv"  # Output save path
 
-# === 初始化 OSS 连接 ===
+# === Initialize OSS connection ===
 auth = oss2.Auth(access_key_id, access_key_secret)
 bucket = oss2.Bucket(auth, endpoint, bucket_name)
 
 def upload_image(local_path: str, remote_path: str):
     if not os.path.exists(local_path):
-        print(f"[跳过] 本地文件不存在: {local_path}")
+        print(f"[SKIP] Local file does not exist: {local_path}")
         return None
     bucket.put_object_from_file(remote_path, local_path)
     url = f"https://{bucket_name}.{region}.aliyuncs.com/{remote_path}"
-    print(f"[上传成功] {url}")
+    print(f"[UPLOAD SUCCESS] {url}")
     return url
 
 results = []
@@ -53,4 +53,4 @@ with open(output_csv, "w", encoding="utf-8", newline="") as fw:
     writer.writeheader()
     writer.writerows(results)
 
-print(f"✅ 图片 URL 映射已保存到: {output_csv}")
+print(f"✅ Image URL mapping saved to: {output_csv}")

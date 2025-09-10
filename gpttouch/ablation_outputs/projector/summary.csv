@@ -1,0 +1,2 @@
+﻿variant,R@1_t2r,R@1_t2t,R@5_t2r,R@5_t2t,mAP_t2r,mAP_t2t,not_found_rate_t2r,not_found_rate_t2t,MedR_t2r,MeanR_t2r,MedR_t2t,MeanR_t2t,R@1_t2r_CI_low,R@1_t2r_CI_high,R@5_t2r_CI_low,R@5_t2r_CI_high,mAP_t2r_CI_low,mAP_t2r_CI_high,N
+ViTProjector,0.0,0.0,0.0,0.0,0.0,0.0,1.0,1.0,4542.0,4542.0,4542.0,4542.0,0.0,0.0,0.0,0.0,0.0,0.0,46

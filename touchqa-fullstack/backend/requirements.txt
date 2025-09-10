@@ -1,0 +1,15 @@
+# backend/requirements.txt
+fastapi==0.111.0
+uvicorn[standard]==0.30.1
+python-multipart==0.0.9
+pydantic==2.8.2
+joblib==1.4.2
+faiss-cpu==1.8.0
+numpy==1.26.4
+pandas==2.2.2
+Pillow==10.4.0
+# Model-related; ensure proper CUDA/Torch build per your env
+torch==2.3.1
+torchvision==0.18.1
+torchaudio==2.3.1
+openai==1.37.1

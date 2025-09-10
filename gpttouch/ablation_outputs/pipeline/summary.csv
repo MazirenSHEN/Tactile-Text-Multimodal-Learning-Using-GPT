@@ -1,0 +1,4 @@
+﻿setting,N_samples,BLEU4_mean,TokenF1_mean,rgb_refs_attached_total,used_template_total,projector_path,ft_model_name,BERTScore_P,BERTScore_R,BERTScore_F1
+Stage1_only_multimodal,138,0.020663736497736562,0.0280914667325103,230,138,tac_projector_vit5p_best.pt,gpt-4o-mini,0.44078755378723145,0.5397623181343079,0.48462975025177
+Stage2_only_tactile,138,0.05398467258035988,0.10146754353915481,0,0,,ft:gpt-4o-2024-08-06:personal:tactilemode:C3Y5BzQp,0.5112466216087341,0.58376544713974,0.5442425608634949
+Full_Stage1_to_Stage2,138,0.06139916732496001,0.15704416194724446,230,138,tac_projector_vit5p_best.pt,ft:gpt-4o-2024-08-06:personal:tactilemode:C3Y5BzQp,0.5379101634025574,0.6252627968788147,0.5774250626564026
