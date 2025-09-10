@@ -108,5 +108,3 @@
     Use the dependency versions specified inside each subproject’s README or lock files.
 
   ---
-
-  If anything is unclear, open an issue or ping me.
